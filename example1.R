@@ -16,11 +16,16 @@
 #       JASA,104(485), 249-262
 #
 rm(list = ls())
-library("fields")
-source("BayesLatticeLik.r")
-source("BayesLattice.r")
-source("dynamicLik.r")
-source("tvar_spec.r")
+
+##### load library
+library("fields") # for plotting image plots
+
+##### load R functions of Bayesian lattice filters
+source("./Rfun/BayesLatticeLik.r")
+source("./Rfun/BayesLattice.r")
+source("./Rfun/dynamicLik.r")
+source("./Rfun/tvar_spec.r")
+
 ##### Simulate a TVAR(2) process
 N <- 1024
 et <- rnorm(N)

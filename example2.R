@@ -7,12 +7,18 @@
 #       JASA,104(485), 249-262
 #
 rm(list = ls())
+
+##### load library
 library("fields")
-library("signal")
-source("BayesLatticeLik.r")
-source("BayesLattice.r")
-source("dynamicLik.r")
-source("tvar_spec.r")
+#library("signal")
+
+##### load R functions of Bayesian lattice filters
+source("./Rfun/BayesLatticeLik.r")
+source("./Rfun/BayesLattice.r")
+source("./Rfun/dynamicLik.r")
+source("./Rfun/tvar_spec.r")
+
+
 ##### Simulate a TVAR(6) process
 N <- 1024
 et <- rnorm(N)

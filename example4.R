@@ -7,13 +7,15 @@
 #
 rm(list = ls())
 
-setwd("C:/D/myCode/R/BayesLattice/")
-
+##### load library
 library("fields")
-source("BayesLatticeLik.r")
-source("BayesLattice.r")
-source("dynamicLik.r")
-source("tvar_spec.r")
+
+##### load R functions of Bayesian lattice filters
+source("./Rfun/BayesLatticeLik.r")
+source("./Rfun/BayesLattice.r")
+source("./Rfun/dynamicLik.r")
+source("./Rfun/tvar_spec.r")
+
 ##### Simulate a TVAR(2) process
 N <- 1024
 et <- rnorm(N)
