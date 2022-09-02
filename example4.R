@@ -1,0 +1,102 @@
+# AR(3) process (not stationary)
+# 
+#            
+#    X_t = 0.8996 * X_{t-1} - 0.8 * X_{t-2} -0.8981 * X_{t-3}+ e_t, for  1<= t <= 1024
+#            
+#
+#
+rm(list = ls())
+
+setwd("C:/D/myCode/R/BayesLattice/")
+
+library("fields")
+source("BayesLatticeLik.r")
+source("BayesLattice.r")
+source("dynamicLik.r")
+source("tvar_spec.r")
+##### Simulate a TVAR(2) process
+N <- 1024
+et <- rnorm(N)
+xt1 <- rnorm(1)
+xt2 <- rnorm(1)
+xt3 <- rnorm(1)
+
+true_coeffs <- matrix(NA, 3, N)
+signal <- numeric(N)
+
+for (tt in 1:N) {
+  signal[tt] <- 0.8996*xt1 - 0.8*xt2 - 0.8981*xt3 + et[tt]
+	
+	true_coeffs[1,tt] <- 0.8996
+	true_coeffs[2,tt] <- -0.8
+	true_coeffs[3,tt] <- -0.8981
+
+  xt3 <- xt2
+	xt2 <- xt1
+  xt1 <- signal[tt]
+}
+
+plot(1:N, signal, main="TVAR(2)", type="l", xlab="Time", ylab="")
+
+##### Procedure 1: Search orders of TVAR models #####
+disSys <- seq(0.8,1, by = 0.02)
+disMea <- seq(0.8,1, by = 0.02)
+P <- 5
+
+para_combin <- BayesLatticeLik(signal, P, disSys, disMea)
+
+# BLFscree plot
+plot(1:P,para_combin[,4], type = "l",
+     xlab = "Order", 
+		 ylab = "log(likelihood)", 
+		 main = "")
+   
+
+##### Procedure 2: Obtain time-varying coefficients, innovation variance, and PARCOR of TVAR(P) #####
+sel_order <- 3 ## Remember to change it according to the result of order selection
+Dfactor <- para_combin[1:sel_order,2:3] 
+
+tvarp <- BayesLattice(signal, Dfactor)
+
+par(mfrow = c(3,1))
+plot(1:N, tvarp$parcor[1,], type="l", main="PARCOR coefficients", xlab="", ylab="", col=1, ylim=c(-1,1))
+lines(1:N, tvarp$parcor[2,], col=2)
+lines(1:N, tvarp$parcor[3,], col=3)
+abline(h=0, col="gray")
+
+ylim <- range(tvarp$coefs)
+plot(1:N, tvarp$coefs[1,], type="l", main="TVAR coefficients", xlab="", ylab="", col=1, ylim=ylim)
+lines(1:N, tvarp$coefs[2,], col=2)
+lines(1:N, tvarp$coefs[3,], col=3)
+
+plot(1:N, tvarp$s2, type="l", main="Variance", xlab="", ylab="", col=1)
+
+
+##### Procedure 3: Make spectrum plots #####
+times <- 1:N
+freqs <- seq(0, 0.5, by = 0.005)
+spec <- tvar_spec(tvarp$coefs, tvarp$s2, times, freqs)
+spec <- log(spec)
+
+tspec <- tvar_spec(true_coeffs, rep(1,N), times, freqs)
+tspec <- log(tspec)
+
+
+set.panel() # reset plotting device
+par(oma=c( 0,0,0,6)) # margin of 4 spaces width at right hand side
+set.panel( 3,1) 
+
+plot(times, signal, type ="l", xlab = "", ylab = "", main = "TVAR(2)")
+
+image(times, freqs, t(tspec), main="True Spectrogram", xlab = "", ylab = "Frequency", col = tim.colors(64))
+image.plot(tspec, legend.shrink = 1, legend.width = 1,  col = tim.colors(64), legend.only = T, legend.mar = 0.5)
+
+image(times, freqs, t(spec), main="Posterior mean", xlab = "", ylab = "Frequency", col = tim.colors(64))
+image.plot(spec, legend.shrink = 1, legend.width = 1,  col = tim.colors(64), legend.only = T, legend.mar = 0.5)
+
+set.panel() 
+
+
+
+
+    
