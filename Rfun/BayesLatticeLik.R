@@ -20,7 +20,6 @@
 BayesLatticeLik = function(signal, P, disSys, disMea){
 
 N <- length(signal)
-#likp <- array(0, dim = c(length(disSys),length(disMea),P)) # Comment out (20191128)
 para_combin <- matrix(0, nrow = P, ncol = 4)
 
 # initial values at t_0
@@ -45,7 +44,6 @@ for (kk in 1:P) {
       del <- c(disSys[nSys],disMea[nMea])
 			resultf <- dynamicLik(finnov,c(numeric(kk), binnov[1:(N-kk)]), del, m0, C0, s0, n0)
 			
-#			likp[nSys,nMea,kk] <- resultf$llike # Comment out (20191128)
 			if (resultf$llike > maxlike) {
 				para_combin[kk,2] <- disSys[nSys]
 				para_combin[kk,3] <- disMea[nMea]
