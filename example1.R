@@ -15,18 +15,22 @@
 #     ``Local Spectral Analysis via a Bayesian Mixture of Smoothing Splines,''   
 #       JASA,104(485), 249-262
 #
-rm(list = ls())
 
-##### load library
-library("fields") # for plotting image plots
+# Remove objects and recover memory
+rm(list=ls())
+invisible(gc())
 
-##### load R functions of Bayesian lattice filters
+# load library
+library("fields") # for image plots
+
+# load R functions of the Bayesian lattice filters
 source("./Rfun/BayesLatticeLik.r")
 source("./Rfun/BayesLattice.r")
 source("./Rfun/dynamicLik.r")
 source("./Rfun/tvar_spec.r")
 
-##### Simulate a TVAR(2) process
+# Simulation
+## TVAR(2) process
 N <- 1024
 et <- rnorm(N)
 xt1 <- rnorm(1)
