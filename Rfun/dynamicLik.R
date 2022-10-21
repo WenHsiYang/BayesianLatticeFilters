@@ -36,59 +36,63 @@
 #  e    : 1 x N estimated innovations 
 #  llike: log-likelihood
 #
-# Note:
+# References
+#
+# * West, M., & Harrison, J. (2006). Bayesian forecasting and dynamic 
+#    models. Springer Science & Business Media.
 #		
 
 dynamicLik = function(y, x, del, m0, C0, s0, n0){
 
-# set output
-N <- length(y)
-m <- numeric(N)  
-CC <- numeric(N)  
-s <- numeric(N)    
-n <- numeric(N)  
+  # set output
+  N <- length(y)
+  m <- numeric(N)  
+  CC <- numeric(N)  
+  s <- numeric(N)    
+  n <- numeric(N)  
 
-d <- del[1] 
-b <- del[2]
-mt <- m0 
-Ct <- C0 
-st <- s0 
-nt <- n0
-llike <- 0
-# forward filtering
-for (ii in 1:N) {
-  G <- x[ii]
-  A <- Ct*G/d 
-	Q <- G*A + st 
-	A <- A/Q 
-	e <- y[ii] - G * mt
-	nt <- b * nt
-	# non-standardized Student's t-distribution
-  llike <- llike + lgamma((nt+1)/2) - lgamma(nt/2) - log(nt*Q)/2 - (nt+1)*log(1+e*e/(Q*nt))/2 
-    
-	mt <- mt + A*e 
-	m[ii] <- mt
-	r <- nt + e*e/Q 
-	nt <- nt+1 
-	r <- r/nt 
-	st <- st*r 
-	n[ii] <- nt 
-	s[ii] <- st   
-  Ct <- r * (Ct/d - A*A*Q)
-	CC[ii] <- Ct 	
-}
+  d <- del[1] 
+  b <- del[2]
+  mt <- m0 
+  Ct <- C0 
+  st <- s0 
+  nt <- n0
+  llike <- 0
 
-# backward smoothing
-e <- numeric(N)  
-for (ii in (N-1):1) {
-  m[ii] <- (1-d)*m[ii] + d*m[ii+1]
-  e[ii] <- y[ii]- m[ii]*x[ii]
-     
-	n[ii] <- (1-b)*n[ii] + b*n[ii+1]  
-  st <- s[ii] 
-	s[ii] <- 1 / ((1-b)/st + b/s[ii+1]) 
-  CC[ii] <- s[ii] * ((1-d)*CC[ii]/st + d*d*CC[ii+1]/st) 
-}
+  # forward filtering
+  for (ii in 1:N) {
+    G <- x[ii]
+    A <- Ct*G/d 
+  	Q <- G*A + st 
+  	A <- A/Q 
+  	e <- y[ii] - G * mt
+  	nt <- b * nt
+  	# non-standardized Student's t-distribution
+    llike <- llike + lgamma((nt+1)/2) - lgamma(nt/2) - log(nt*Q)/2 - (nt+1)*log(1+e*e/(Q*nt))/2 
+      
+  	mt <- mt + A*e 
+  	m[ii] <- mt
+  	r <- nt + e*e/Q 
+  	nt <- nt+1 
+  	r <- r/nt 
+  	st <- st*r 
+  	n[ii] <- nt 
+  	s[ii] <- st   
+    Ct <- r * (Ct/d - A*A*Q)
+  	CC[ii] <- Ct 	
+  }
+
+  # backward smoothing
+  e <- numeric(N)  
+  for (ii in (N-1):1) {
+    m[ii] <- (1-d)*m[ii] + d*m[ii+1]
+    e[ii] <- y[ii]- m[ii]*x[ii]
+       
+  	n[ii] <- (1-b)*n[ii] + b*n[ii+1]  
+    st <- s[ii] 
+  	s[ii] <- 1 / ((1-b)/st + b/s[ii+1]) 
+    CC[ii] <- s[ii] * ((1-d)*CC[ii]/st + d*d*CC[ii+1]/st) 
+  }
 	
 	return(list(m = m, CC = CC, s = s, e = e, n = n, llike = llike))
 }

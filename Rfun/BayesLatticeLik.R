@@ -14,8 +14,6 @@
 # Values: 
 #  para_combin: a P x 4 matrix with columns: order, alpha, disMea, and loglikelihood.  
 #
-#	Note:
-#
 
 BayesLatticeLik = function(signal, P, disSys, disMea){
 

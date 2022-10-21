@@ -1,4 +1,4 @@
-# Calculated the time-varying spectrum of a TVAR(p) model
+# Compute the time-varying representation of a TVAR(P) model
 #
 #	Description:
 # 
@@ -14,9 +14,8 @@
 # Values: 
 #   spec : f x T matrix of spectra
 #
-#	Note:
-#
 
+# main function
 tvar_spec = function(m, s, times, freqs) {
 nt <- length(times)
 p <- nrow(m)
@@ -34,12 +33,14 @@ for (tt in 1:nt) {
 return(spec)
 }
 
-############ subfunctions ####################
-# Polynomial evaluation similar to "polyval" of Matlab.
-# The input argument coeff is a vector of length n+1 where 
-# elements are the coefficients in descending powers of 
-# the polynomial to be evaluated; that is,
-# y = coeff_1 * x_n + coeff_2 * x_n–1 + … + coeff_n * x + coeff_n+1
+# sub-functions
+## polyval
+## Polynomial evaluation similar to "polyval" of Matlab.
+## The input argument coeff is a vector of length n+1 where 
+## elements are the coefficients in descending powers of 
+## the polynomial to be evaluated; that is,
+## y = coeff_1 * x_n + coeff_2 * x_n–1 + … + coeff_n * x + coeff_n+1
+##
 
 polyval <- function(coeff,x) {
    n <- length(coeff)
