@@ -8,10 +8,10 @@ library("fields")
 library("signal")
 
 ##### load R functions of Bayesian lattice filters
-source("./Rfun/BayesLatticeLik.r")
-source("./Rfun/BayesLattice.r")
-source("./Rfun/dynamicLik.r")
-source("./Rfun/tvar_spec.r")
+source("./Rfun/BayesLatticeLik.R")
+source("./Rfun/BayesLattice.R")
+source("./Rfun/dynamicLik.R")
+source("./Rfun/tvar_spec.R")
 
 ## Simulate a chirp signal with quadratic instantaneous frequency deviation
 ## The chirp is sampled at 1 kHz for 2 seconds. The instantaneous frequency is 100 Hz at t = 0 and crosses 200 Hz at t = 1 second.

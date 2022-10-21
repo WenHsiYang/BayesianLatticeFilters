@@ -13,10 +13,10 @@ library("fields")
 #library("signal")
 
 ##### load R functions of Bayesian lattice filters
-source("./Rfun/BayesLatticeLik.r")
-source("./Rfun/BayesLattice.r")
-source("./Rfun/dynamicLik.r")
-source("./Rfun/tvar_spec.r")
+source("./Rfun/BayesLatticeLik.R")
+source("./Rfun/BayesLattice.R")
+source("./Rfun/dynamicLik.R")
+source("./Rfun/tvar_spec.R")
 
 
 ##### Simulate a TVAR(6) process

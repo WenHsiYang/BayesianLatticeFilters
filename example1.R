@@ -24,12 +24,14 @@ invisible(gc())
 library("fields") # for image plots
 
 # load R functions of the Bayesian lattice filters
-source("./Rfun/BayesLatticeLik.r")
-source("./Rfun/BayesLattice.r")
-source("./Rfun/dynamicLik.r")
-source("./Rfun/tvar_spec.r")
+source("./Rfun/BayesLatticeLik.R")
+source("./Rfun/BayesLattice.R")
+source("./Rfun/dynamicLik.R")
+source("./Rfun/tvar_spec.R")
 
 # Simulation
+set.seed(56789) # random seed
+
 ## TVAR(2) process
 N <- 1024
 et <- rnorm(N)
@@ -52,22 +54,23 @@ for (tt in 1:N) {
 
 plot(1:N, signal, main="TVAR(2)", type="l", xlab="Time", ylab="")
 
-##### Procedure 1: Search orders of TVAR models #####
+# TVAR(P)
+## Procedure 1: Search P
 disSys <- seq(0.8,1, by = 0.02)
 disMea <- seq(0.8,1, by = 0.02)
 P <- 5
 
 para_combin <- BayesLatticeLik(signal, P, disSys, disMea)
 
-# BLFscree plot
+### BLF scree plot
 plot(1:P,para_combin[,4], type = "l",
      xlab = "Order", 
 		 ylab = "log(likelihood)", 
 		 main = "")
    
 
-##### Procedure 2: Obtain time-varying coefficients, innovation variance, and PARCOR of TVAR(P) #####
-sel_order <- 2 ## Remember to change it according to the result of order selection
+## Procedure 2: Fit TVAR(P) using BLF
+sel_order <- 2 # selected order
 Dfactor <- para_combin[1:sel_order,2:3] 
 
 tvarp <- BayesLattice(signal, Dfactor)
@@ -83,8 +86,7 @@ lines(1:N, tvarp$coefs[2,], col=2)
 
 plot(1:N, tvarp$s2, type="l", main="Variance", xlab="", ylab="", col=1)
 
-
-##### Procedure 3: Make spectrum plots #####
+## Procedure 3: Plot the time-frequency representation estimates
 times <- 1:N
 freqs <- seq(0, 0.5, by = 0.005)
 spec <- tvar_spec(tvarp$coefs, tvarp$s2, times, freqs)
@@ -103,7 +105,7 @@ plot(times, signal, type ="l", xlab = "", ylab = "", main = "TVAR(2)")
 image(times, freqs, t(tspec), main="True Spectrogram", xlab = "", ylab = "Frequency", col = tim.colors(64))
 image.plot(tspec, legend.shrink = 1, legend.width = 1,  col = tim.colors(64), legend.only = T, legend.mar = 0.5)
 
-image(times, freqs, t(spec), main="Posterior mean", xlab = "", ylab = "Frequency", col = tim.colors(64))
+image(times, freqs, t(spec), main="Estimates", xlab = "", ylab = "Frequency", col = tim.colors(64))
 image.plot(spec, legend.shrink = 1, legend.width = 1,  col = tim.colors(64), legend.only = T, legend.mar = 0.5)
 
 set.panel() 
