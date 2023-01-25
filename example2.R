@@ -20,6 +20,20 @@ source("./Rfun/BayesLattice.R")
 source("./Rfun/dynamicLik.R")
 source("./Rfun/tvar_spec.R")
 
+## Function converts AR characteristic roots to AR coefficients
+polyInv <- function(ar_root) {
+	nn <- length(ar_root)
+	pp <- rep(0,nn+1)
+	pp[1] <- 1
+
+	for (ii in 1:nn) {
+  		pp[2:(ii+1)] <- pp[2:(ii+1)] - ar_root[ii]*pp[1:ii]
+	}
+	return(Re(pp))
+}
+
+
+
 # Simulation
 set.seed(56789) # random seed
 
@@ -46,8 +60,9 @@ for (tt in 1:N) {
 		a3_c <- Conj(a3_r)
 	
 		ar_root <- c(a1_r, a1_c, a2_r, a2_c, a3_r, a3_c)
-		coeff <- Re(poly(ar_root))
-		coeff <- -coeff[2:7]
+		coeff <- polyInv(ar_root)
+        coeff <- -coeff[2:7]
+
 		true_coeffs[,tt] <- coeff
 	
 		signal[tt] <- xt[1]*coeff[1] + xt[2]*coeff[2]+ xt[3]*coeff[3]+ xt[4]*coeff[4]+ xt[5]*coeff[5] + xt[6]*coeff[6] + et[tt]
