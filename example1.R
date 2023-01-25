@@ -70,7 +70,7 @@ plot(1:P,para_combin[,4], type = "l",
    
 
 ## Procedure 2: Fit TVAR(P) using BLF
-sel_order <- 2 # selected order
+sel_order <- 2 # select order
 Dfactor <- para_combin[1:sel_order,2:3] 
 
 tvarp <- BayesLattice(signal, Dfactor)
@@ -85,6 +85,7 @@ plot(1:N, tvarp$coefs[1,], type="l", main="TVAR coefficients", xlab="", ylab="",
 lines(1:N, tvarp$coefs[2,], col=2)
 
 plot(1:N, tvarp$s2, type="l", main="Variance", xlab="", ylab="", col=1)
+
 
 ## Procedure 3: Plot the time-frequency representation estimates
 times <- 1:N

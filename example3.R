@@ -1,20 +1,26 @@
 # A chirp signal
-# 
-#
-rm(list = ls())
 
-##### load library
+# Remove objects and recover memory
+rm(list=ls())
+invisible(gc())
+
+# load library
 library("fields")
 library("signal")
 
-##### load R functions of Bayesian lattice filters
+# load R functions of the Bayesian lattice filters
 source("./Rfun/BayesLatticeLik.R")
 source("./Rfun/BayesLattice.R")
 source("./Rfun/dynamicLik.R")
 source("./Rfun/tvar_spec.R")
 
-## Simulate a chirp signal with quadratic instantaneous frequency deviation
-## The chirp is sampled at 1 kHz for 2 seconds. The instantaneous frequency is 100 Hz at t = 0 and crosses 200 Hz at t = 1 second.
+# Simulation
+set.seed(56789) # random seed
+
+#  Simulate a chirp signal with quadratic instantaneous frequency deviation
+#  The chirp is sampled at 1 kHz for 2 seconds. The instantaneous 
+#  frequency is 100 Hz at t = 0 and crosses 200 Hz at t = 1 second.
+
 Fs <- 1000
 times <- seq(0, 2, by=1/Fs)
 signal <- chirp(times, 100, 1, 200, "quadratic")
@@ -26,23 +32,29 @@ signal <- signal + rnorm(N, 0, 10^-5) ## add noises with small variance to obtai
 
 plot(times, signal, main="A chirp signal", type="l", xlab="Time", ylab="")
 
-##### Procedure 1: Search orders of TVAR models #####
+# TVAR(P)
+## Procedure 1: Search P
 disSys <- seq(0.8,1, by = 0.02)
 disMea <- seq(0.8,1, by = 0.02)
 P <- 25
 
 para_combin <- BayesLatticeLik(signal, P, disSys, disMea)
 
-# BLFscree plot
+### BLF scree plot
 plot(1:P,para_combin[,4], type = "l",
      xlab = "Order", 
 		 ylab = "log(likelihood)", 
 		 main = "")
 
+### Use an empirical to select order.
+#    Note that AIC, BIC or other likelihood-based method can be used to
+#    select order.
 which(((para_combin[2:P,4] - para_combin[1:(P-1),4])/abs(para_combin[1:(P-1),4]))*100 < 0.5)
 
-##### Procedure 2: Obtain time-varying coefficients, innovation variance, and PARCOR of TVAR(P) #####
-sel_order <- 12 ## Remember to change it according to the result of order selection   
+## Procedure 2: Fit the chirp signal using BLFsel_order <- 12 
+#    Remember to change it according to the result of order selection   
+sel_order <- 14 # select order
+
 Dfactor <- para_combin[1:sel_order,2:3] 
 
 tvarp <- BayesLattice(signal, Dfactor)
@@ -59,7 +71,8 @@ for (ii in 2:sel_order) lines(1:N, tvarp$coefs[ii,], col=ii)
 plot(1:N, tvarp$s2, type="l", main="Variance", xlab="", ylab="", col=1)
 
 
-##### Procedure 3: Make spectrum plots #####
+## Procedure 3: Plot the time-frequency representation estimates
+#   Compare with the short time Fourier Transform (STFS)
 freqs <- seq(0, 0.5, by = 0.005)
 spec <- tvar_spec(tvarp$coefs, tvarp$s2, 1:N, freqs)
 spec <- log(spec)

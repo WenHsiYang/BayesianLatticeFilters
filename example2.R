@@ -20,7 +20,7 @@ source("./Rfun/BayesLattice.R")
 source("./Rfun/dynamicLik.R")
 source("./Rfun/tvar_spec.R")
 
-## Function converts AR characteristic roots to AR coefficients
+## R function converts AR characteristic roots to AR coefficients
 polyInv <- function(ar_root) {
 	nn <- length(ar_root)
 	pp <- rep(0,nn+1)
@@ -72,22 +72,23 @@ for (tt in 1:N) {
 
 plot(1:N, signal, main="TVAR(6)", type="l", xlab="Time", ylab="")
 
-##### Procedure 1: Search orders of TVAR models #####
+# TVAR(P)
+## Procedure 1: Search P
 disSys <- seq(0.8,1, by = 0.02)
 disMea <- seq(0.8,1, by = 0.02)
 P <- 10
 
 para_combin <- BayesLatticeLik(signal, P, disSys, disMea)
 
-# BLFscree plot
+### BLF scree plot
 plot(1:P,para_combin[,4], type = "l",
      xlab = "Order", 
 		 ylab = "log(likelihood)", 
 		 main = "")
    
 
-##### Procedure 2: Obtain time-varying coefficients, innovation variance, and PARCOR of TVAR(P) #####
-sel_order <- 6 ## Remember to change it according to the result of order selection
+## Procedure 2: Fit TVAR(P) using BLF
+sel_order <- 6 # select order
 Dfactor <- para_combin[1:sel_order,2:3]
 
 tvarp <- BayesLattice(signal, Dfactor)
@@ -104,7 +105,7 @@ for (ii in 2:6) lines(1:N, tvarp$coefs[ii,], col=ii)
 plot(1:N, tvarp$s2, type="l", main="Variance", xlab="", ylab="", col=1)
 
 
-##### Procedure 3: Make spectrum plots #####
+## Procedure 3: Plot the time-frequency representation estimates
 times <- 1:N
 freqs <- seq(0, 0.5, by = 0.005)
 spec <- tvar_spec(tvarp$coefs, tvarp$s2, times, freqs)
