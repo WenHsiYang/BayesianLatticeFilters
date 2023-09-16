@@ -18,4 +18,4 @@ Estimate the parameters of time-varying autoregression models and reveal the tim
 ## Further reading
 * Yang, W. H., Holan, S. H., & Wikle, C. K. (2016). Bayesian lattice filters for time-varying autoregression and time–frequency analysis. Bayesian Analysis, 11(4), 977-1003. [link](https://projecteuclid.org/journals/bayesian-analysis/volume-11/issue-4/Bayesian-Lattice-Filters-for-Time-Varying-Autoregression-and-TimeFrequency-Analysis/10.1214/15-BA978.full?tab=ArticleLink)
 
-  * Note: in the paper, Equation (8) contains a typo; that is, $d_{t,k}^{(m)}$ should be replaced with $d_{t,m}^{(m)}$.
+  * Note: in the paper, Equation (8) contains a typo; that is, $d_{t,k}^{(m)}$ on the right side of the equation should be replaced with $d_{t,m}^{(m)}$.
